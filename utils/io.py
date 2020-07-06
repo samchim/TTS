@@ -13,7 +13,7 @@ class AttrDict(dict):
 
 def load_config(config_path):
     config = AttrDict()
-    with open(config_path, "r") as f:
+    with open(config_path, "r", encoding='UTF-8') as f:
         input_str = f.read()
     input_str = re.sub(r'\\\n', '', input_str)
     input_str = re.sub(r'//.*\n', '\n', input_str)

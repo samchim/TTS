@@ -74,7 +74,7 @@ class Synthesizer(object):
         if use_cuda:
             self.tts_model.cuda()
         self.tts_model.eval()
-        self.tts_model.decoder.max_decoder_steps = 90000
+        self.tts_model.decoder.max_decoder_steps = 900000
         if 'r' in cp:
             self.tts_model.decoder.set_r(cp['r'])
 

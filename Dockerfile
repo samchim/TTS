@@ -10,6 +10,7 @@ RUN apt-get update && \
 # Copy Source later to enable dependency caching
 COPY requirements.txt /srv/app/
 RUN pip install -r requirements.txt
+RUN pip install numba==0.48
 
 COPY . /srv/app
 
@@ -17,4 +18,14 @@ COPY . /srv/app
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-CMD python3.6 server/server.py -c server/conf.json
+WORKDIR /srv/
+RUN mkdir TTS
+RUN cp -r /srv/app/* /srv/TTS
+RUN rm -R /srv/app
+RUN cp /srv/TTS/zhy_* /usr/lib/x86_64-linux-gnu/espeak-data
+RUN espeak --compile=zhy
+WORKDIR /srv/
+
+CMD /bin/bash
+#CMD espeak -v zhy "你 好 "
+#CMD python3 -m TTS.server.server

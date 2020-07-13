@@ -177,37 +177,21 @@ class Synthesizer(object):
         speaker_id = id_to_torch(speaker_id)
         if speaker_id is not None and self.use_cuda:
             speaker_id = speaker_id.cuda()
-
+        
         for sen in sens:
-            # preprocess the given text
-            inputs = text_to_seqvec(sen, self.tts_config)
-            inputs = numpy_to_torch(inputs, torch.long, cuda=self.use_cuda)
-            inputs = inputs.unsqueeze(0)
-            # synthesize voice
-            decoder_output, postnet_output, alignments, stop_tokens = run_model_torch(
-                self.tts_model, inputs, self.tts_config, False, speaker_id, None)
-            # convert outputs to numpy
-            postnet_output, decoder_output, _, _ = parse_outputs_torch(
-                postnet_output, decoder_output, alignments, stop_tokens)
-
-            if self.pwgan:
-                vocoder_input = torch.FloatTensor(postnet_output.T).unsqueeze(0)
-                if self.use_cuda:
-                    vocoder_input.cuda()
-                wav = self.pwgan.inference(vocoder_input, hop_size=self.ap.hop_length)
-            elif self.wavernn:
-                vocoder_input = None
-                if self.tts_config.model == "Tacotron":
-                    vocoder_input = torch.FloatTensor(self.ap.out_linear_to_mel(linear_spec=postnet_output.T).T).T.unsqueeze(0)
-                else:
-                    vocoder_input = torch.FloatTensor(postnet_output.T).unsqueeze(0)
-
-                if self.use_cuda:
-                    vocoder_input.cuda()
-                wav = self.wavernn.generate(vocoder_input, batched=self.config.is_wavernn_batched, target=11000, overlap=550)
-            else:
-                wav = inv_spectrogram(postnet_output, self.ap, self.tts_config)
-            # trim silence
+            wav, alignment, decoder_output, postnet_output, stop_tokens, inputs = synthesis(
+                self.tts_model,
+                sen,
+                self.tts_config,
+                self.use_cuda,
+                self.ap,
+                speaker_id=speaker_id,
+                style_wav=self.tts_config.style_wav_for_test,
+                truncated=False,
+                enable_eos_bos_chars=self.tts_config.enable_eos_bos_chars, #pylint: disable=unused-argument
+                use_griffin_lim=True,
+                do_trim_silence=False
+            )
             wav = trim_silence(wav, self.ap)
 
             wavs += list(wav)
@@ -216,3 +200,41 @@ class Synthesizer(object):
         out = io.BytesIO()
         self.save_wav(wavs, out)
         return out
+
+
+
+
+        # for sen in sens:
+        #     # preprocess the given text
+        #     inputs = text_to_seqvec(sen, self.tts_config)
+        #     inputs = numpy_to_torch(inputs, torch.long, cuda=self.use_cuda)
+        #     inputs = inputs.unsqueeze(0)
+        #     # synthesize voice
+        #     decoder_output, postnet_output, alignments, stop_tokens = run_model_torch(
+        #         self.tts_model, inputs, self.tts_config, False, speaker_id, None)
+        #     # convert outputs to numpy
+        #     postnet_output, decoder_output, _, _ = parse_outputs_torch(
+        #         postnet_output, decoder_output, alignments, stop_tokens)
+
+        #     if self.pwgan:
+        #         vocoder_input = torch.FloatTensor(postnet_output.T).unsqueeze(0)
+        #         if self.use_cuda:
+        #             vocoder_input.cuda()
+        #         wav = self.pwgan.inference(vocoder_input, hop_size=self.ap.hop_length)
+        #     elif self.wavernn:
+        #         vocoder_input = None
+        #         if self.tts_config.model == "Tacotron":
+        #             vocoder_input = torch.FloatTensor(self.ap.out_linear_to_mel(linear_spec=postnet_output.T).T).T.unsqueeze(0)
+        #         else:
+        #             vocoder_input = torch.FloatTensor(postnet_output.T).unsqueeze(0)
+
+        #         if self.use_cuda:
+        #             vocoder_input.cuda()
+        #         wav = self.wavernn.generate(vocoder_input, batched=self.config.is_wavernn_batched, target=11000, overlap=550)
+        #     else:
+        #         wav = inv_spectrogram(postnet_output, self.ap, self.tts_config)
+        #     # trim silence
+        #     wav = trim_silence(wav, self.ap)
+
+        #     wavs += list(wav)
+        #     wavs += [0] * 10000

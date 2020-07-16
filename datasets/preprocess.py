@@ -6,6 +6,7 @@ from TTS.utils.generic_utils import split_dataset
 
 
 def load_meta_data(datasets):
+    print
     meta_data_train_all = []
     meta_data_eval_all = []
     for dataset in datasets:
@@ -210,7 +211,7 @@ def custom_turkish(root_path, meta_file):
     return items
 
 
-def myType(root_path, meta_file):
+def mytype(root_path, meta_file):
     """Normalizes the Nancy meta data file to TTS format"""
     txt_file = os.path.join(root_path, meta_file)
     items = []

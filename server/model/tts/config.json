@@ -1,8 +1,8 @@
 {
-"github_branch":"* master",
+"github_branch":"* sam",
     "model": "Tacotron2",
-    "run_name": "simple_cantonese",
-    "run_description": "tacotron2",
+    "run_name": "simple_cantonese_eng_yutPing_multiSpeaker",
+    "run_description": "tacotron2, eng with yutPing, multiSpeaker",
 
     // AUDIO PARAMETERS
     "audio":{
@@ -43,14 +43,14 @@
     // VOCABULARY PARAMETERS
     // if custom character set is not defined,
     // default set in symbols.py is used
-    "characters":{
-        "pad": "_",
-        "eos": "~",
-        "bos": "^",
-        "characters": " ABCDEFGHJKLMNOPSTUVWYabegilmnoprtuy一七三中九二五似位住係個入兩八六其到十右呀呢咗唔嗰四壞好寫就左幾度得成我支新有枝柱燈碼編繼續號街要覆見記起輸重零需",
-        "punctuations":" ",
-        "phonemes":"iyɨʉɯuɪʏʊeøɘəɵɤoɛœɜɞʌɔæɐaɶɑɒᵻʘɓǀɗǃʄǂɠǁʛpbtdʈɖcɟkɡqɢʔɴŋɲɳnɱmʙrʀⱱɾɽɸβfvθðszʃʒʂʐçʝxɣχʁħʕhɦɬɮʋɹɻjɰlɭʎʟˈˌːˑʍwɥʜʢʡɕʑɺɧɚ˞ɫ"
-    },
+    // "characters":{
+    //     "pad": "_",
+    //     "eos": "~",
+    //     "bos": "^",
+    //     "characters": " ABCDEFGHJKLMNOPSTUVWYabegilmnoprtuy一七三中九二五似位住係個入兩八六其到十右呀呢咗唔嗰四壞好寫就左幾度得成我支新有枝柱燈碼編繼續號街要覆見記起輸重零需",
+    //     "punctuations":" ",
+    //     "phonemes":"iyɨʉɯuɪʏʊeøɘəɵɤoɛœɜɞʌɔæɐaɶɑɒᵻʘɓǀɗǃʄǂɠǁʛpbtdʈɖcɟkɡqɢʔɴŋɲɳnɱmʙrʀⱱɾɽɸβfvθðszʃʒʂʐçʝxɣχʁħʕhɦɬɮʋɹɻjɰlɭʎʟˈˌːˑʍwɥʜʢʡɕʑɺɧɚ˞ɫ"
+    // },
 
     // DISTRIBUTED TRAINING
     "distributed":{
@@ -70,16 +70,16 @@
 
     // VALIDATION
     "run_eval": true,
-    "test_delay_epochs": 10,  //Until attention is aligned, testing only wastes computation time.
-    "test_sentences_file": null,  // set a file to load sentences to be used for testing. If it is null then we use default english sentences.
+    "test_delay_epochs": 50,  //Until attention is aligned, testing only wastes computation time.
+    "test_sentences_file": "../simple_cantonese/test_sentence",  // set a file to lonzad sentences to be used for testing. If it is null then we use default english sentences.
 
     // OPTIMIZER
-    "noam_schedule": false,        // use noam warmup and lr schedule.
+    "noam_schedule": true,        // use noam warmup and lr schedule.
     "grad_clip": 1.0,              // upper limit for gradients for clipping.
-    "epochs": 500,                // total number of epochs to train.
+    "epochs": 1000,                // total number of epochs to train.
     "lr": 0.0001,                  // Initial learning rate. If Noam decay is active, maximum learning rate.
     "wd": 0.000001,                // Weight decay weight.
-    "warmup_steps": 4000,          // Noam decay steps to increase the learning rate from 0 to "lr"
+    "warmup_steps": 150,          // Noam decay steps to increase the learning rate from 0 to "lr"
     "seq_len_norm": false,         // Normalize eash sample loss with its length to alleviate imbalanced datasets. Use it if your dataset is small or has skewed distribution of sequence lengths.
 
     // TACOTRON PRENET
@@ -90,7 +90,7 @@
     // ATTENTION
     "attention_type": "original",  // 'original' or 'graves'
     "attention_heads": 4,          // number of attention heads (only for 'graves')
-    "attention_norm": "sigmoid",   // softmax or sigmoid. Suggested to use softmax for Tacotron2 and sigmoid for Tacotron.
+    "attention_norm": "softmax",   // softmax or sigmoid. Suggested to use softmax for Tacotron2 and sigmoid for Tacotron.
     "windowing": false,            // Enables attention windowing. Used only in eval mode.
     "use_forward_attn": false,     // if it uses forward attention. In general, it aligns faster.
     "forward_attn_mask": false,    // Additional masking forcing monotonicity only in eval mode.
@@ -122,12 +122,12 @@
     "output_path": "../simple_cantonese",
 
     // PHONEMES
-    "phoneme_cache_path": "../simple_cantonese/phoneme_cache",  // phoneme computation is slow, therefore, it caches results in the given folder.
+    "phoneme_cache_path": "../simple_cantonese",  // phoneme computation is slow, therefore, it caches results in the given folder.
     "use_phonemes": true,           // use phonemes instead of raw characters. It is suggested for better pronounciation.
-    "phoneme_language": "zh-yue",     // depending on your target language, pick one from  https://github.com/bootphon/phonemizer#languages
+    "phoneme_language": "en-us",     // depending on your target language, pick one from  https://github.com/bootphon/phonemizer#languages
 
     // MULTI-SPEAKER and GST
-    "use_speaker_embedding": false,     // use speaker embedding to enable multi-speaker learning.
+    "use_speaker_embedding": true,     // use speaker embedding to enable multi-speaker learning.
     "style_wav_for_test": null,          // path to style wav file to be used in TacotronGST inference.
     "use_gst": false,       // TACOTRON ONLY: use global style tokens
 
@@ -135,7 +135,7 @@
     "datasets":   // List of datasets. They all merged and they get different speaker_ids.
         [
             {
-                "name": "ljspeech",
+                "name": "mytype",
                 "path": "../simple_cantonese",
                 "meta_file_train": "metadata_train.csv",
                 "meta_file_val": "metadata_val.csv"

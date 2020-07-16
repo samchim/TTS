@@ -92,6 +92,7 @@ def mozilla_de(root_path, meta_file):
 
 
 def mailabs(root_path, meta_files=None):
+    print("hi")
     """Normalizes M-AI-Labs meta data files to TTS format"""
     speaker_regex = re.compile("by_book/(male|female)/(?P<speaker_name>[^/]+)/")
     if meta_files is None:
@@ -102,12 +103,14 @@ def mailabs(root_path, meta_files=None):
     items = []
     for csv_file in csv_files:
         txt_file = os.path.join(root_path, csv_file)
+        print(txt_file)
         folder = os.path.dirname(txt_file)
         # determine speaker based on folder structure...
-        speaker_name_match = speaker_regex.search(txt_file)
-        if speaker_name_match is None:
-            continue
-        speaker_name = speaker_name_match.group("speaker_name")
+        # speaker_name_match = speaker_regex.search(txt_file)
+        # if speaker_name_match is None:
+        #     continue
+        # speaker_name = speaker_name_match.group("speaker_name")
+        speaker_name = ""
         print(" | > {}".format(csv_file))
         with open(txt_file, 'r') as ttf:
             for line in ttf:
@@ -204,4 +207,18 @@ def custom_turkish(root_path, meta_file):
             text = cols[1].strip()
             items.append([text, wav_file, speaker_name])
     print(f" [!] {len(skipped_files)} files skipped. They don't exist...")
+    return items
+
+
+def myType(root_path, meta_file):
+    """Normalizes the Nancy meta data file to TTS format"""
+    txt_file = os.path.join(root_path, meta_file)
+    items = []
+    with open(txt_file, 'r') as ttf:
+        for line in ttf:
+            cols = line.split('|')
+            wav_file = os.path.join(root_path, 'wavs', cols[0] + '.wav')
+            text = cols[2]
+            speaker_name = cols[3]
+            items.append([text, wav_file, speaker_name])
     return items

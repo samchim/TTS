@@ -40,6 +40,10 @@ class Tacotron2(nn.Module):
         val = sqrt(3.0) * std  # uniform bounds for std
         self.embedding.weight.data.uniform_(-val, val)
         if num_speakers > 1:
+            # print("-----------------tacotron2.py---------------------")
+            # print("num_speakers")
+            # print(num_speakers)
+            # print("-----------------tacotron2.py---------------------")
             self.speaker_embedding = nn.Embedding(num_speakers, 512)
             self.speaker_embedding.weight.data.normal_(0, 0.3)
             self.speaker_embeddings = None
@@ -120,14 +124,26 @@ class Tacotron2(nn.Module):
         return decoder_outputs_b, alignments_b
 
     def _add_speaker_embedding(self, encoder_outputs, speaker_ids):
+        print("-----------------tacotron2.py---------------------")
+        print(type(speaker_ids))
+        print(speaker_ids)
+        
+        
         if hasattr(self, "speaker_embedding") and speaker_ids is None:
             raise RuntimeError(" [!] Model has speaker embedding layer but speaker_id is not provided")
         if hasattr(self, "speaker_embedding") and speaker_ids is not None:
             speaker_embeddings = self.speaker_embedding(speaker_ids)
 
-            speaker_embeddings.unsqueeze_(1)
+            speaker_embeddings.unsqueeze_(1).squeeze_().unsqueeze_(0)
+            print("speaker_embedding")
+            print(speaker_embeddings.size())
+            print(speaker_embeddings)
+
+            print("encoder_outputs")
+            print(encoder_outputs.size())
             speaker_embeddings = speaker_embeddings.expand(encoder_outputs.size(0),
                                                            encoder_outputs.size(1),
                                                            -1)
             encoder_outputs = encoder_outputs + speaker_embeddings
         return encoder_outputs
+        print("-----------------tacotron2.py---------------------")

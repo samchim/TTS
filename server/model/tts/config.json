@@ -1,8 +1,8 @@
 {
 "github_branch":"* sam",
     "model": "Tacotron2",
-    "run_name": "simple_cantonese_eng_yutPing_multiSpeaker",
-    "run_description": "tacotron2, eng with yutPing, multiSpeaker",
+    "run_name": "Oscar_overfit",
+    "run_description": "Oscar dataset, overfitting",
 
     // AUDIO PARAMETERS
     "audio":{
@@ -14,7 +14,7 @@
         "frame_shift_ms": null,  // stft window hop-lengh in ms. If null, 'hop_length' is used.
 
         // Audio processing parameters
-        "sample_rate": 44100,   // DATASET-RELATED: wav sample-rate. If different than the original data, it is resampled.
+        "sample_rate": 22050,   // DATASET-RELATED: wav sample-rate. If different than the original data, it is resampled.
         "preemphasis": 0.0,     // pre-emphasis to reduce spec noise and make it more structured. If 0.0, no -pre-emphasis.
         "ref_level_db": 20,     // reference level db, theoretically 20db is the sound of air.
 
@@ -47,9 +47,9 @@
     //     "pad": "_",
     //     "eos": "~",
     //     "bos": "^",
-    //     "characters": " ABCDEFGHJKLMNOPSTUVWYabegilmnoprtuy一七三中九二五似位住係個入兩八六其到十右呀呢咗唔嗰四壞好寫就左幾度得成我支新有枝柱燈碼編繼續號街要覆見記起輸重零需",
+    //     "characters": "  01235678abcdefghiklmnopqrstuvw㗎㳄一上下不丟中久之乎乜九了事五亞交人什今他仙代以仲件份企但位住何作你佢使來供依便係信俾個候做偷傳充先克入內全兩八公六其具冇再出分列別到制前剔剛劃功加助務包區十半南卡印即原去參又及友取受另只叫可台各同名吓否吾呀呢咁和咗咩咪哂哥哪唔啊問啲單喺嗎嗰嘅囉四回因國在地址均坡型埋執報場塘填壞士外多夠大天失夾好如始委嫁子字完定客家寄寫將對小少就尼屋工己已巴希帳幫年幾序底府度延式張影很後得心忘忙快怎息情想意應成我或戴所手才打批把抬拎拜括拿持掂排接揀提換揸搞搬搵擇攞支收改放政效整數文料斯新方於既日早明星是時晒普暫更曾最會月有朋服望期未本果架查格業概樣機次正步歲段每比求沒沙法注泰洗洛洲流消淮渠渣港溫滿漏澳灣為無照營爛片版牌現理甚用田由申番畫當登發的直相眼知示票禮私租程種算系約紙索細結統經維網緊線編繳續约署羅老考者耐聽能腦臨自至致般色英荃華著處號蚊行街表衫補裡複要見規視親覽觀解計訊託記許詢試話該詳誤請謂謝證貨貴費資起超越跌跟身車載輕輪輸轉辦近返通進遊運過道達遞遲選遺還邊那部郵都重野量金銀錄錢錯鏡開間關附限陣隊際雙離電需面項預領頭顏顔類香駕駛驟體麼黃黎點龍",
     //     "punctuations":" ",
-    //     "phonemes":"iyɨʉɯuɪʏʊeøɘəɵɤoɛœɜɞʌɔæɐaɶɑɒᵻʘɓǀɗǃʄǂɠǁʛpbtdʈɖcɟkɡqɢʔɴŋɲɳnɱmʙrʀⱱɾɽɸβfvθðszʃʒʂʐçʝxɣχʁħʕhɦɬɮʋɹɻjɰlɭʎʟˈˌːˑʍwɥʜʢʡɕʑɺɧɚ˞ɫ"
+    //     "phonemes":"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyziyɨʉɯuɪʏʊeøɘəɵɤoɛœɜɞʌɔæɐaɶɑɒᵻʘɓǀɗǃʄǂɠǁʛpbtdʈɖcɟkɡqɢʔɴŋɲɳnɱmʙrʀⱱɾɽɸβfvθðszʃʒʂʐçʝxɣχʁħʕhɦɬɮʋɹɻjɰlɭʎʟˈˌːˑʍwɥʜʢʡɕʑɺɧɚ˞ɫ"
     // },
 
     // DISTRIBUTED TRAINING
@@ -70,14 +70,14 @@
 
     // VALIDATION
     "run_eval": true,
-    "test_delay_epochs": 50,  //Until attention is aligned, testing only wastes computation time.
-    "test_sentences_file": "../simple_cantonese/test_sentence",  // set a file to lonzad sentences to be used for testing. If it is null then we use default english sentences.
+    "test_delay_epochs": 800,  //Until attention is aligned, testing only wastes computation time.
+    "test_sentences_file": "../Oscar/test_sentence",  // set a file to lonzad sentences to be used for testing. If it is null then we use default english sentences.
 
     // OPTIMIZER
     "noam_schedule": true,        // use noam warmup and lr schedule.
     "grad_clip": 1.0,              // upper limit for gradients for clipping.
     "epochs": 1000,                // total number of epochs to train.
-    "lr": 0.0001,                  // Initial learning rate. If Noam decay is active, maximum learning rate.
+    "lr": 0.0002,                  // Initial learning rate. If Noam decay is active, maximum learning rate.
     "wd": 0.000001,                // Weight decay weight.
     "warmup_steps": 150,          // Noam decay steps to increase the learning rate from 0 to "lr"
     "seq_len_norm": false,         // Normalize eash sample loss with its length to alleviate imbalanced datasets. Use it if your dataset is small or has skewed distribution of sequence lengths.
@@ -119,15 +119,15 @@
     "max_seq_len": 153,     // DATASET-RELATED: maximum text length
 
     // PATHS
-    "output_path": "../simple_cantonese",
+    "output_path": "../Oscar",
 
     // PHONEMES
-    "phoneme_cache_path": "../simple_cantonese",  // phoneme computation is slow, therefore, it caches results in the given folder.
+    "phoneme_cache_path": "../Oscar/phoneme_cache",  // phoneme computation is slow, therefore, it caches results in the given folder.
     "use_phonemes": true,           // use phonemes instead of raw characters. It is suggested for better pronounciation.
     "phoneme_language": "en-us",     // depending on your target language, pick one from  https://github.com/bootphon/phonemizer#languages
 
     // MULTI-SPEAKER and GST
-    "use_speaker_embedding": true,     // use speaker embedding to enable multi-speaker learning.
+    "use_speaker_embedding": false,     // use speaker embedding to enable multi-speaker learning.
     "style_wav_for_test": null,          // path to style wav file to be used in TacotronGST inference.
     "use_gst": false,       // TACOTRON ONLY: use global style tokens
 
@@ -136,7 +136,7 @@
         [
             {
                 "name": "mytype",
-                "path": "../simple_cantonese",
+                "path": "../Oscar",
                 "meta_file_train": "metadata_train.csv",
                 "meta_file_val": "metadata_val.csv"
             }

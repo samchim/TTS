@@ -1,31 +1,35 @@
-FROM pytorch/pytorch:1.0.1-cuda10.0-cudnn7-runtime
+FROM pytorch/pytorch:1.5-cuda10.1-cudnn7-runtime
 
-WORKDIR /srv/app
+# WORKDIR /app
 
-RUN apt-get update && \
-	apt-get install -y libsndfile1 espeak && \
-	apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get update
+RUN apt-get install libsndfile1 espeak python3-pip -y 
+	# apt-get clean && \
+	# rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy Source later to enable dependency caching
-COPY requirements.txt /srv/app/
-RUN pip install -r requirements.txt
-RUN pip install numba==0.48
+# WORKDIR /app
 
-COPY . /srv/app
+WORKDIR /
+# RUN git clone https://github.com/samchim/TTS.git
+# RUN git checkout sam
+RUN mkdir TTS
+COPY TTS /TTS/
+WORKDIR /TTS/
+# WORKDIR /TTS/
+RUN pip3 install Jinja2==2.10.1
+RUN pip3 install -r requirements.txt
+RUN pip3 install numba==0.48
+
+RUN mkdir -p /Oscar/
+ADD Oscar/* /Oscar/
+
+# CMD /bin/bash
 
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-WORKDIR /srv/
-RUN mkdir TTS
-RUN cp -r /srv/app/* /srv/TTS
-RUN rm -R /srv/app
-RUN cp /srv/TTS/zhy_* /usr/lib/x86_64-linux-gnu/espeak-data
-RUN espeak --compile=zhy
-WORKDIR /srv/
-
-CMD /bin/bash
-#CMD espeak -v zhy "你 好 "
-#CMD python3 -m TTS.server.server
+# RUN pwd > docker.log
+WORKDIR /TTS/
+CMD python3 train.py --config_path ../Oscar/config.json

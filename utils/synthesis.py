@@ -101,6 +101,10 @@ def inv_spectrogram(postnet_output, ap, CONFIG):
 def id_to_torch(speaker_id):
     if speaker_id is not None:
         speaker_id = np.asarray(speaker_id)
+        # print("-----------------synthesis.py---------------------")
+        # print(type(speaker_id))
+        # print(speaker_id)
+        # print("-----------------synthesis.py---------------------")
         speaker_id = torch.from_numpy(speaker_id).unsqueeze(0)
     return speaker_id
 

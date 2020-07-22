@@ -62,8 +62,13 @@ class Synthesizer(object):
             self.input_size = len(symbols)
         # TODO: fix this for multi-speaker model - load speakers
         if self.config.tts_speakers is not None:
-            self.tts_speakers = load_speaker_mapping(self.config.tts_speakers)
-            num_speakers = len(self.tts_speakers)
+            self.tts_speakers_dict = load_speaker_mapping(self.config.tts_speakers)
+            print("-----------------speaker---------------------")
+            print(type(self.tts_speakers_dict))
+            print(self.tts_speakers_dict)
+            print("-----------------speaker---------------------")
+            num_speakers = len(self.tts_speakers_dict)
+            self.tts_speakers = range(num_speakers)
         else:
             num_speakers = 0
         self.tts_model = setup_model(self.input_size, num_speakers=num_speakers, c=self.tts_config)
@@ -78,60 +83,6 @@ class Synthesizer(object):
         if 'r' in cp:
             self.tts_model.decoder.set_r(cp['r'])
 
-    def load_wavernn(self, lib_path, model_file, model_config, use_cuda):
-        # TODO: set a function in wavernn code base for model setup and call it here.
-        sys.path.append(lib_path) # set this if WaveRNN is not installed globally
-        #pylint: disable=import-outside-toplevel
-        from WaveRNN.models.wavernn import Model
-        print(" > Loading WaveRNN model ...")
-        print(" | > model config: ", model_config)
-        print(" | > model file: ", model_file)
-        self.wavernn_config = load_config(model_config)
-        # This is the default architecture we use for our models.
-        # You might need to update it
-        self.wavernn = Model(
-            rnn_dims=512,
-            fc_dims=512,
-            mode=self.wavernn_config.mode,
-            mulaw=self.wavernn_config.mulaw,
-            pad=self.wavernn_config.pad,
-            use_aux_net=self.wavernn_config.use_aux_net,
-            use_upsample_net=self.wavernn_config.use_upsample_net,
-            upsample_factors=self.wavernn_config.upsample_factors,
-            feat_dims=80,
-            compute_dims=128,
-            res_out_dims=128,
-            res_blocks=10,
-            hop_length=self.ap.hop_length,
-            sample_rate=self.ap.sample_rate,
-        ).cuda()
-
-        check = torch.load(model_file, map_location="cpu")
-        self.wavernn.load_state_dict(check['model'])
-        if use_cuda:
-            self.wavernn.cuda()
-        self.wavernn.eval()
-
-    def load_pwgan(self, lib_path, model_file, model_config, use_cuda):
-        if lib_path:
-            # set this if ParallelWaveGAN is not installed globally
-            sys.path.append(lib_path)
-        try:
-            #pylint: disable=import-outside-toplevel
-            from parallel_wavegan.models import ParallelWaveGANGenerator
-        except ImportError as e:
-            raise RuntimeError(f"cannot import parallel-wavegan, either install it or set its directory using the --pwgan_lib_path command line argument: {e}")
-        print(" > Loading PWGAN model ...")
-        print(" | > model config: ", model_config)
-        print(" | > model file: ", model_file)
-        with open(model_config) as f:
-            self.pwgan_config = yaml.load(f, Loader=yaml.Loader)
-        self.pwgan = ParallelWaveGANGenerator(**self.pwgan_config["generator_params"])
-        self.pwgan.load_state_dict(torch.load(model_file, map_location="cpu")["model"]["generator"])
-        self.pwgan.remove_weight_norm()
-        if use_cuda:
-            self.pwgan.cuda()
-        self.pwgan.eval()
 
     def save_wav(self, wav, path):
         # wav *= 32767 / max(1e-8, np.max(np.abs(wav)))
@@ -174,6 +125,8 @@ class Synthesizer(object):
         wavs = []
         sens = self.split_into_sentences(text)
         print(sens)
+        if self.config.tts_speakers is not None:
+            speaker_id = self.tts_speakers
         speaker_id = id_to_torch(speaker_id)
         if speaker_id is not None and self.use_cuda:
             speaker_id = speaker_id.cuda()
@@ -238,3 +191,58 @@ class Synthesizer(object):
 
         #     wavs += list(wav)
         #     wavs += [0] * 10000
+
+    def load_wavernn(self, lib_path, model_file, model_config, use_cuda):
+        # TODO: set a function in wavernn code base for model setup and call it here.
+        sys.path.append(lib_path) # set this if WaveRNN is not installed globally
+        #pylint: disable=import-outside-toplevel
+        from WaveRNN.models.wavernn import Model
+        print(" > Loading WaveRNN model ...")
+        print(" | > model config: ", model_config)
+        print(" | > model file: ", model_file)
+        self.wavernn_config = load_config(model_config)
+        # This is the default architecture we use for our models.
+        # You might need to update it
+        self.wavernn = Model(
+            rnn_dims=512,
+            fc_dims=512,
+            mode=self.wavernn_config.mode,
+            mulaw=self.wavernn_config.mulaw,
+            pad=self.wavernn_config.pad,
+            use_aux_net=self.wavernn_config.use_aux_net,
+            use_upsample_net=self.wavernn_config.use_upsample_net,
+            upsample_factors=self.wavernn_config.upsample_factors,
+            feat_dims=80,
+            compute_dims=128,
+            res_out_dims=128,
+            res_blocks=10,
+            hop_length=self.ap.hop_length,
+            sample_rate=self.ap.sample_rate,
+        ).cuda()
+
+        check = torch.load(model_file, map_location="cpu")
+        self.wavernn.load_state_dict(check['model'])
+        if use_cuda:
+            self.wavernn.cuda()
+        self.wavernn.eval()
+
+    def load_pwgan(self, lib_path, model_file, model_config, use_cuda):
+        if lib_path:
+            # set this if ParallelWaveGAN is not installed globally
+            sys.path.append(lib_path)
+        try:
+            #pylint: disable=import-outside-toplevel
+            from parallel_wavegan.models import ParallelWaveGANGenerator
+        except ImportError as e:
+            raise RuntimeError(f"cannot import parallel-wavegan, either install it or set its directory using the --pwgan_lib_path command line argument: {e}")
+        print(" > Loading PWGAN model ...")
+        print(" | > model config: ", model_config)
+        print(" | > model file: ", model_file)
+        with open(model_config) as f:
+            self.pwgan_config = yaml.load(f, Loader=yaml.Loader)
+        self.pwgan = ParallelWaveGANGenerator(**self.pwgan_config["generator_params"])
+        self.pwgan.load_state_dict(torch.load(model_file, map_location="cpu")["model"]["generator"])
+        self.pwgan.remove_weight_norm()
+        if use_cuda:
+            self.pwgan.cuda()
+        self.pwgan.eval()

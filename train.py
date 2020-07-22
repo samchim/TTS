@@ -589,8 +589,9 @@ def main(args):  # pylint: disable=redefined-outer-name
         target_loss = train_avg_loss_dict['avg_postnet_loss']
         if c.run_eval:
             target_loss = eval_avg_loss_dict['avg_postnet_loss']
-        best_loss = save_best_model(target_loss, best_loss, model, optimizer, global_step, epoch, c.r,
-                                    OUT_PATH)
+        if epoch % 10 == 0:
+            best_loss = save_best_model(target_loss, best_loss, model, optimizer, global_step, epoch, c.r,
+                                        OUT_PATH)
 
 
 if __name__ == '__main__':

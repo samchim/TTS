@@ -83,5 +83,6 @@ def local_tts(text):
 
 if __name__ == '__main__':
     # app.run(debug=args.debug, host='0.0.0.0', port=args.port)
-    text = input("text: ")
+    # text = input("text: ")
+    text = "kei zung jat zi hai A B ji saam sei ng "
     local_tts(text)

@@ -425,7 +425,7 @@ def evaluate(model, criterion, ap, global_step, epoch):
             tb_logger.tb_eval_stats(global_step, epoch_stats)
             tb_logger.tb_eval_figures(global_step, eval_figures)
 
-    if args.rank == 0 and epoch > c.test_delay_epochs:
+    if args.rank == 0 and epoch > c.test_delay_epochs and epoch % 10 == 0 :
         if c.test_sentences_file is None:
             test_sentences = []
         else:

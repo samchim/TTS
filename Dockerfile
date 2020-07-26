@@ -48,11 +48,23 @@ RUN mkdir -p /Oscar/
 RUN mkdir -p /Oscar/wavs
 ADD Oscar/wavs/* /Oscar/wavs/
 
+WORKDIR / 
+RUN mkdir log
+
+WORKDIR /TTS/
+RUN git pull
+
 ARG CACHEBUST=1
 ADD Oscar/metadata_train.csv /Oscar/
 ADD Oscar/metadata_val.csv /Oscar/
 ADD Oscar/config.json /Oscar/
+ADD Oscar/test_sentence /Oscar/
+# ADD Oscar/Oscar-July-24-2020_08+15AM-9677763/* /Oscar/Oscar-July-24-2020_08+15AM-9677763/
+ADD keep_training.sh /
+
 
 # # RUN pwd > docker.log
-WORKDIR /TTS/
-CMD git pull && python train.py --config_path ../Oscar/config.json
+# CMD python train.py --config_path ../Oscar/config.json --restore_path ../Oscar/Oscar-July-24-2020_08+15AM-9677763/best_model.pth.tar 2>&1 | tee train.log
+
+WORKDIR /
+CMD bash keep_training.sh Oscar | tee /log/over_all.log

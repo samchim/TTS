@@ -124,9 +124,9 @@ class Tacotron2(nn.Module):
         return decoder_outputs_b, alignments_b
 
     def _add_speaker_embedding(self, encoder_outputs, speaker_ids):
-        print("-----------------tacotron2.py---------------------")
-        print(type(speaker_ids))
-        print(speaker_ids)
+        # print("-----------------tacotron2.py---------------------")
+        # print(type(speaker_ids))
+        # print(speaker_ids)
         
         
         if hasattr(self, "speaker_embedding") and speaker_ids is None:
@@ -146,4 +146,4 @@ class Tacotron2(nn.Module):
                                                            -1)
             encoder_outputs = encoder_outputs + speaker_embeddings
         return encoder_outputs
-        print("-----------------tacotron2.py---------------------")
+        # print("-----------------tacotron2.py---------------------")

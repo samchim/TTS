@@ -1,8 +1,9 @@
 {
 "github_branch":"* sam",
+"restore_path":"../Oscar/Oscar-July-26-2020_01+52AM-9677763/best_model.pth.tar",
     "model": "Tacotron2",
-    "run_name": "Oscar_overfit",
-    "run_description": "Oscar dataset, overfitting",
+    "run_name": "Oscar",
+    "run_description": "Oscar dataset",
 
     // AUDIO PARAMETERS
     "audio":{
@@ -47,9 +48,9 @@
     //     "pad": "_",
     //     "eos": "~",
     //     "bos": "^",
-    //     "characters": "  01235678abcdefghiklmnopqrstuvw㗎㳄一上下不丟中久之乎乜九了事五亞交人什今他仙代以仲件份企但位住何作你佢使來供依便係信俾個候做偷傳充先克入內全兩八公六其具冇再出分列別到制前剔剛劃功加助務包區十半南卡印即原去參又及友取受另只叫可台各同名吓否吾呀呢咁和咗咩咪哂哥哪唔啊問啲單喺嗎嗰嘅囉四回因國在地址均坡型埋執報場塘填壞士外多夠大天失夾好如始委嫁子字完定客家寄寫將對小少就尼屋工己已巴希帳幫年幾序底府度延式張影很後得心忘忙快怎息情想意應成我或戴所手才打批把抬拎拜括拿持掂排接揀提換揸搞搬搵擇攞支收改放政效整數文料斯新方於既日早明星是時晒普暫更曾最會月有朋服望期未本果架查格業概樣機次正步歲段每比求沒沙法注泰洗洛洲流消淮渠渣港溫滿漏澳灣為無照營爛片版牌現理甚用田由申番畫當登發的直相眼知示票禮私租程種算系約紙索細結統經維網緊線編繳續约署羅老考者耐聽能腦臨自至致般色英荃華著處號蚊行街表衫補裡複要見規視親覽觀解計訊託記許詢試話該詳誤請謂謝證貨貴費資起超越跌跟身車載輕輪輸轉辦近返通進遊運過道達遞遲選遺還邊那部郵都重野量金銀錄錢錯鏡開間關附限陣隊際雙離電需面項預領頭顏顔類香駕駛驟體麼黃黎點龍",
+    //     "characters": " ABCDEFGHJKLMNOPSTUVWYabegilmnoprtuy一七三中九二五似位住係個入兩八六其到十右呀呢咗唔嗰四壞好寫就左幾度得成我支新有枝柱燈碼編繼續號街要覆見記起輸重零需",
     //     "punctuations":" ",
-    //     "phonemes":"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyziyɨʉɯuɪʏʊeøɘəɵɤoɛœɜɞʌɔæɐaɶɑɒᵻʘɓǀɗǃʄǂɠǁʛpbtdʈɖcɟkɡqɢʔɴŋɲɳnɱmʙrʀⱱɾɽɸβfvθðszʃʒʂʐçʝxɣχʁħʕhɦɬɮʋɹɻjɰlɭʎʟˈˌːˑʍwɥʜʢʡɕʑɺɧɚ˞ɫ"
+    //     "phonemes":"iyɨʉɯuɪʏʊeøɘəɵɤoɛœɜɞʌɔæɐaɶɑɒᵻʘɓǀɗǃʄǂɠǁʛpbtdʈɖcɟkɡqɢʔɴŋɲɳnɱmʙrʀⱱɾɽɸβfvθðszʃʒʂʐçʝxɣχʁħʕhɦɬɮʋɹɻjɰlɭʎʟˈˌːˑʍwɥʜʢʡɕʑɺɧɚ˞ɫ"
     // },
 
     // DISTRIBUTED TRAINING
@@ -61,23 +62,23 @@
     "reinit_layers": [],    // give a list of layer names to restore from the given checkpoint. If not defined, it reloads all heuristically matching layers.
 
     // TRAINING
-    "batch_size": 32,       // Batch size for training. Lower values than 32 might cause hard to learn attention. It is overwritten by 'gradual_training'.
-    "eval_batch_size":16,
+    "batch_size":64,       // Batch size for training. Lower values than 32 might cause hard to learn attention. It is overwritten by 'gradual_training'.
+    "eval_batch_size":64,
     "r": 7,                 // Number of decoder frames to predict per iteration. Set the initial values if gradual training is enabled.
-    "gradual_training": [[0, 7, 64], [1, 5, 64], [50000, 3, 32], [130000, 2, 32], [290000, 1, 32]], //set gradual training steps [first_step, r, batch_size]. If it is null, gradual training is disabled. For Tacotron, you might need to reduce the 'batch_size' as you proceeed.
+    "gradual_training": [[0, 7, 64], [1, 5, 64]], //set gradual training steps [first_step, r, batch_size]. If it is null, gradual training is disabled. For Tacotron, you might need to reduce the 'batch_size' as you proceeed.
     "loss_masking": true,         // enable / disable loss masking against the sequence padding.
     "ga_alpha": 10.0,        // weight for guided attention loss. If > 0, guided attention is enabled.
 
     // VALIDATION
-    "run_eval": true,
-    "test_delay_epochs": 800,  //Until attention is aligned, testing only wastes computation time.
+    "run_eval": false,
+    "test_delay_epochs": 150,  //Until attention is aligned, testing only wastes computation time.
     "test_sentences_file": "../Oscar/test_sentence",  // set a file to lonzad sentences to be used for testing. If it is null then we use default english sentences.
 
     // OPTIMIZER
-    "noam_schedule": true,        // use noam warmup and lr schedule.
+    "noam_schedule": false,        // use noam warmup and lr schedule.
     "grad_clip": 1.0,              // upper limit for gradients for clipping.
-    "epochs": 1000,                // total number of epochs to train.
-    "lr": 0.0002,                  // Initial learning rate. If Noam decay is active, maximum learning rate.
+    "epochs": 200,                // total number of epochs to train.
+    "lr": 0.0001,                  // Initial learning rate. If Noam decay is active, maximum learning rate.
     "wd": 0.000001,                // Weight decay weight.
     "warmup_steps": 150,          // Noam decay steps to increase the learning rate from 0 to "lr"
     "seq_len_norm": false,         // Normalize eash sample loss with its length to alleviate imbalanced datasets. Use it if your dataset is small or has skewed distribution of sequence lengths.
@@ -124,7 +125,7 @@
     // PHONEMES
     "phoneme_cache_path": "../Oscar/phoneme_cache",  // phoneme computation is slow, therefore, it caches results in the given folder.
     "use_phonemes": true,           // use phonemes instead of raw characters. It is suggested for better pronounciation.
-    "phoneme_language": "en-us",     // depending on your target language, pick one from  https://github.com/bootphon/phonemizer#languages
+    "phoneme_language": "zh-yue",     // depending on your target language, pick one from  https://github.com/bootphon/phonemizer#languages
 
     // MULTI-SPEAKER and GST
     "use_speaker_embedding": false,     // use speaker embedding to enable multi-speaker learning.

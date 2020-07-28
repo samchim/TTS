@@ -44,7 +44,7 @@ RUN espeak --compile=zhy
 
 ENV PYTHONPATH="/"
 
-RUN apt-get install 
+# RUN apt-get install moreutils jq -y
 
 RUN mkdir -p /simple_cantonese/
 RUN mkdir -p /simple_cantonese/wavs
@@ -56,12 +56,15 @@ RUN mkdir log
 WORKDIR /TTS/
 RUN git pull
 
-ARG CACHEBUST=1
+ADD simple_cantonese/phoneme_cache /simple_cantonese/
+
+ARG CACHEBUST=2
 ADD simple_cantonese/metadata_train.csv /simple_cantonese/
 ADD simple_cantonese/metadata_val.csv /simple_cantonese/
-ADD simple_cantonese/config.json /simple_cantonese/
+ADD simple_cantonese/config_big_lr.json /simple_cantonese/
+ADD simple_cantonese/config_small_lr.json /simple_cantonese/
 ADD simple_cantonese/test_sentence /simple_cantonese/
 ADD keep_training.sh /
 
 WORKDIR /
-CMD bash keep_training.sh simple_cantonese | tee /log/over_all.log
+CMD bash keep_training.sh simple_cantonese 2>&1 | tee /log/over_all.log
